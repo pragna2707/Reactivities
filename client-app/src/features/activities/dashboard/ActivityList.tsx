@@ -2,15 +2,25 @@
 // import { Button, Card, CardBody, CardSubtitle, CardText, CardTitle, ListGroupItem } from 'react-bootstrap'
 import { Button } from 'react-bootstrap';
 import { Activity } from '../../../app/models/activity';
+import { SyntheticEvent, useState } from 'react';
 
 
 interface Props {
     activities: Activity[];
     selectActivity: (id: string) => void;
     deleteActivity: (id: string) => void;
+    submitting: boolean;
 }
 
-export default function ActivityList({ activities, selectActivity, deleteActivity }: Props) {
+export default function ActivityList({ activities, selectActivity, deleteActivity, submitting }: Props) {
+
+    const [target, setTarget] = useState('');
+
+    function handleActivityDelete(e: SyntheticEvent<HTMLButtonElement>, id: string) {
+        setTarget(e.currentTarget.name);
+        deleteActivity(id);
+    }
+
     return (
         <div className="card">
             <div className="card-body">
@@ -24,11 +34,20 @@ export default function ActivityList({ activities, selectActivity, deleteActivit
                             <span className="badge bg-secondary">{activity.category}</span>
                             <div>
                                 <Button
+                                    name={activity.id}
                                     variant="danger"
                                     className="me-2"
-                                    onClick={() => deleteActivity(activity.id)}
+                                    onClick={(e) => handleActivityDelete(e, activity.id)}
+                                    disabled={submitting && target === activity.id}
                                 >
-                                    Delete
+                                    {submitting && target === activity.id ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            Deleting...
+                                        </>
+                                    ) : (
+                                        'Delete'
+                                    )}
                                 </Button>
                                 <Button variant="primary"
                                     onClick={() => selectActivity(activity.id)}
