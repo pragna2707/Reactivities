@@ -1,14 +1,15 @@
 // import React from 'react'
 import { Button, Card } from "react-bootstrap";
-import { Activity } from "../../../app/models/activity";
+import { useStore } from "../../../app/stores/store";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
 
-interface Props {
-    activity: Activity;
-    cancelSelectActivity: () => void;
-    openForm: (id: string) => void;
-}
+export default function ActivityDetails() {
 
-export default function ActivityDetails({ activity, cancelSelectActivity, openForm }: Props) {
+    const {activityStore} = useStore();
+    const {selectedActivity: activity, openForm, cancelSelectedActivity} = activityStore;
+
+    if (!activity) return <LoadingComponent/>;
+
     return (
         <Card className="w-100" >
             <Card.Img variant="top" src={`/assets/categoryImages/${activity.category}.jpg`} />
@@ -20,7 +21,7 @@ export default function ActivityDetails({ activity, cancelSelectActivity, openFo
             <Card.Footer>
                 <div className="d-grid gap-2 d-md-flex justify-content-md-between">
                     <Button onClick={() => openForm(activity.id)} variant="outline-primary" className="w-100">Edit</Button>
-                    <Button onClick={cancelSelectActivity} variant="outline-secondary" className="w-100">Cancel</Button>
+                    <Button onClick={cancelSelectedActivity} variant="outline-secondary" className="w-100">Cancel</Button>
                 </div>
             </Card.Footer>
         </Card>

@@ -1,16 +1,12 @@
 // import React from 'react'
 import { Button, Form } from "react-bootstrap";
-import { Activity } from "../../../app/models/activity";
 import { ChangeEvent, useState } from "react";
+import { useStore } from "../../../app/stores/store";
+import { observer } from "mobx-react-lite";
 
-interface Props {
-    activity: Activity | undefined;
-    closeForm: () => void;
-    createOrEdit: (activity: Activity) => void;
-    submitting: boolean;
-}
-
-export default function ActivityForm({ activity: selectedActivity, closeForm, createOrEdit, submitting }: Props) {
+export default observer(function ActivityForm() {
+    const {activityStore} = useStore();
+    const{selectedActivity, closeForm, createActivity, updateActivity, loading} = activityStore;
 
     const initialState = selectedActivity ?? {
         id: '',
@@ -27,9 +23,8 @@ export default function ActivityForm({ activity: selectedActivity, closeForm, cr
     // function handleSubmit() {
     //     createOrEdit(activity);
     // }
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        createOrEdit(activity);
+    function handleSubmit() {
+        void(activity.id ? updateActivity(activity) : createActivity(activity));
     }
 
 
@@ -50,9 +45,9 @@ export default function ActivityForm({ activity: selectedActivity, closeForm, cr
                 <Button
                     type="submit"
                     className="btn btn-success float-end"
-                    disabled={submitting}
+                    disabled={loading}
                 >
-                    {submitting ? (
+                    {loading ? (
                         <>
                             <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                             Loading...
@@ -66,4 +61,4 @@ export default function ActivityForm({ activity: selectedActivity, closeForm, cr
             </Form>
         </div>
     )
-}
+})

@@ -1,18 +1,12 @@
-// import React from 'react'
-// import { Button, Card, CardBody, CardSubtitle, CardText, CardTitle, ListGroupItem } from 'react-bootstrap'
 import { Button } from 'react-bootstrap';
-import { Activity } from '../../../app/models/activity';
 import { SyntheticEvent, useState } from 'react';
+import { useStore } from '../../../app/stores/store';
+import { observer } from 'mobx-react-lite';
 
-
-interface Props {
-    activities: Activity[];
-    selectActivity: (id: string) => void;
-    deleteActivity: (id: string) => void;
-    submitting: boolean;
-}
-
-export default function ActivityList({ activities, selectActivity, deleteActivity, submitting }: Props) {
+export default observer(function ActivityList() {
+    
+    const {activityStore} = useStore();
+    const{deleteActivity, activitiesByDate, loading} = activityStore;
 
     const [target, setTarget] = useState('');
 
@@ -24,7 +18,7 @@ export default function ActivityList({ activities, selectActivity, deleteActivit
     return (
         <div className="card">
             <div className="card-body">
-                {activities.map((activity) => (
+                {activitiesByDate.map((activity) => (
                     <div key={activity.id} className="mb-4 pb-3 border-bottom">
                         <h5 className="card-title">{activity.title}</h5>
                         <h6 className="card-subtitle mb-2 text-muted">{activity.date}</h6>
@@ -38,11 +32,12 @@ export default function ActivityList({ activities, selectActivity, deleteActivit
                                     variant="danger"
                                     className="me-2"
                                     onClick={(e) => handleActivityDelete(e, activity.id)}
-                                    disabled={submitting && target === activity.id}
+                                    disabled={loading && target === activity.id}
                                 >
-                                    {submitting && target === activity.id ? (
+                                    {loading && target === activity.id ? (
                                         <>
-                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                            <span className="spinner-border spinner-border-sm me-2" 
+                                                role="status" aria-hidden="true"></span>
                                             Deleting...
                                         </>
                                     ) : (
@@ -50,7 +45,7 @@ export default function ActivityList({ activities, selectActivity, deleteActivit
                                     )}
                                 </Button>
                                 <Button variant="primary"
-                                    onClick={() => selectActivity(activity.id)}
+                                    onClick={() => activityStore.selectActivity(activity.id)}
                                 >
                                     View
                                 </Button>
@@ -63,4 +58,4 @@ export default function ActivityList({ activities, selectActivity, deleteActivit
 
     )
 
-}
+})
