@@ -1,16 +1,21 @@
-// import React from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import ActivityList from './ActivityList';
-import ActivityDetails from '../details/ActivityDetails';
-import ActivityForm from '../form/ActivityForm';
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 
 
 export default observer(function ActivityDashboard() {
 
     const {activityStore} = useStore();
-    const {selectedActivity, editMode} = activityStore;
+    const {loadActivities, activityRegistry} = activityStore;
+
+    useEffect(() => {
+      if (activityRegistry.size <= 1) loadActivities();
+    }, [activityRegistry.size, loadActivities])
+  
+    if (activityStore.loadingInitial) return <LoadingComponent content='Loading app'/>
 
     return (
         <>
@@ -20,10 +25,7 @@ export default observer(function ActivityDashboard() {
                 <ActivityList />
             </Col>
             <Col md="4">
-                {selectedActivity && !editMode &&
-                <ActivityDetails />}
-                {editMode &&
-                <ActivityForm />}
+                <h2>Activity filters</h2>
             </Col>
             </Row>
         </Container>

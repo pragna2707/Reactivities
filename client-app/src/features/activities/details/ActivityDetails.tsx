@@ -1,14 +1,21 @@
-// import React from 'react'
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Nav } from "react-bootstrap";
 import { useStore } from "../../../app/stores/store";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { observer } from "mobx-react-lite";
+import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
 
-export default function ActivityDetails() {
+export default observer(function ActivityDetails() {
 
     const {activityStore} = useStore();
-    const {selectedActivity: activity, openForm, cancelSelectedActivity} = activityStore;
+    const {selectedActivity: activity, loadActivity, loadingInitial } = activityStore;
+    const {id} = useParams();
 
-    if (!activity) return <LoadingComponent/>;
+    useEffect(() => {
+        if (id) loadActivity(id);
+    }, [id, loadActivity])
+
+    if (loadingInitial || !activity) return <LoadingComponent/>;
 
     return (
         <Card className="w-100" >
@@ -20,11 +27,15 @@ export default function ActivityDetails() {
             </Card.Body>
             <Card.Footer>
                 <div className="d-grid gap-2 d-md-flex justify-content-md-between">
-                    <Button onClick={() => openForm(activity.id)} variant="outline-primary" className="w-100">Edit</Button>
-                    <Button onClick={cancelSelectedActivity} variant="outline-secondary" className="w-100">Cancel</Button>
+                    <Nav.Link as={Link} to={`/manage/${activity.id}`}>
+                    <Button variant="outline-primary" className="w-100">Edit</Button>
+                    </Nav.Link>
+                    <Nav.Link as={Link} to='/activities'>
+                    <Button variant="outline-secondary" className="w-100">Cancel</Button>
+                    </Nav.Link>
                 </div>
             </Card.Footer>
         </Card>
 
     )
-}
+})

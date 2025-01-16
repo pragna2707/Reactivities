@@ -1,7 +1,8 @@
-import { Button } from 'react-bootstrap';
+import { Button, Nav } from 'react-bootstrap';
 import { SyntheticEvent, useState } from 'react';
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
+import { Link } from 'react-router-dom';
 
 export default observer(function ActivityList() {
     
@@ -26,7 +27,7 @@ export default observer(function ActivityList() {
                         <p className="card-text">{activity.city}, {activity.venue}</p>
                         <div className="d-flex justify-content-between align-items-center">
                             <span className="badge bg-secondary">{activity.category}</span>
-                            <div>
+                            <div className="d-flex">
                                 <Button
                                     name={activity.id}
                                     variant="danger"
@@ -44,18 +45,17 @@ export default observer(function ActivityList() {
                                         'Delete'
                                     )}
                                 </Button>
-                                <Button variant="primary"
-                                    onClick={() => activityStore.selectActivity(activity.id)}
-                                >
-                                    View
-                                </Button>
+                                <Nav.Link as={Link} to={`/activities/${activity.id}`}>
+                                    <Button variant="primary" >
+                                        View
+                                    </Button>
+                                </Nav.Link>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
         </div>
-
     )
 
 })

@@ -1,14 +1,20 @@
-// import React from 'react'
-import { Button, Form } from "react-bootstrap";
-import { ChangeEvent, useState } from "react";
+import { Button, Form, Nav } from "react-bootstrap";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useStore } from "../../../app/stores/store";
 import { observer } from "mobx-react-lite";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { Activity } from "../../../app/models/activity";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import {v4 as uuid} from "uuid";
 
 export default observer(function ActivityForm() {
     const {activityStore} = useStore();
-    const{selectedActivity, closeForm, createActivity, updateActivity, loading} = activityStore;
+    const{ createActivity, updateActivity, 
+        loading, loadActivity, loadingInitial} = activityStore;
+    const {id} = useParams();
+    const navigate = useNavigate();
 
-    const initialState = selectedActivity ?? {
+    const [activity, setActivity] = useState<Activity>({
         id: '',
         title: '',
         category: '',
@@ -16,22 +22,32 @@ export default observer(function ActivityForm() {
         date: '',
         city: '',
         venue: ''
+    });
+
+    useEffect(() => {
+        if (id) loadActivity(id).then(activity => setActivity(activity!))
+    }, [id, loadActivity]);
+
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        try {
+            if (!activity.id) {
+                activity.id = uuid();
+                await createActivity(activity).then(() => navigate(`/activities/${activity.id}`))
+            } else {
+                await updateActivity(activity).then(() => navigate(`/activities/${activity.id}`))
+            }
+        } catch (error) {
+            console.error("Error submitting activity:", error);
+        }
     }
-
-    const [activity, setActivity] = useState(initialState);
-
-    // function handleSubmit() {
-    //     createOrEdit(activity);
-    // }
-    function handleSubmit() {
-        void(activity.id ? updateActivity(activity) : createActivity(activity));
-    }
-
 
     function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const { name, value } = event.target;
         setActivity({ ...activity, [name]: value })
     }
+
+    if (loadingInitial) return <LoadingComponent content="Loading activity..."/>
 
     return (
         <div className="card p-3 clearfix">
@@ -56,8 +72,9 @@ export default observer(function ActivityForm() {
                         'Submit'
                     )}
                 </Button>
-
-                <Button onClick={closeForm} type="submit" variant="secondary" className="btn float-end">Cancel</Button>
+                <Nav.Link as={Link} to='/activities'>
+                    <Button type="submit" variant="secondary" className="btn float-end">Cancel</Button>
+                </Nav.Link>
             </Form>
         </div>
     )
