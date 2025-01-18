@@ -14,6 +14,7 @@ export default function NavBar() {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ms-2">
                         <Nav.Link as={NavLink} to={'/activities'} href="#activities">Activities</Nav.Link>
+                        <Nav.Link as={NavLink} to={'/errors'} href="#errors">Errors</Nav.Link>
                     </Nav>
                     <Nav.Link as={NavLink} to={'/createActivity'} href="#createActivity">
                     <Button  
