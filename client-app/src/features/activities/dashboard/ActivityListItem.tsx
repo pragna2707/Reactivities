@@ -2,6 +2,7 @@ import { Button, Card, Image, ListGroup, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Activity } from "../../../app/models/activity";
 import { FaClock, FaMapMarker } from "react-icons/fa";
+import { format } from "date-fns";
 
 interface Props {
     activity: Activity
@@ -30,7 +31,7 @@ export default function ActivityListItem({ activity }: Props) {
                     <ListGroup.Item>
                         <div className="mb-3">
                             <span className="me-3">
-                                <FaClock className="me-1" /> {activity.date}
+                                <FaClock className="me-1" /> {format(activity.date!, 'dd MMM yyyy h:mm aa')}
                             </span>
                             <span>
                                 <FaMapMarker className="me-1" /> {activity.venue}
